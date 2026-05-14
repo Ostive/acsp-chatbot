@@ -1,26 +1,253 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --acsp-navy: #1e3a5f;
+  --acsp-navy-soft: #2c4a73;
+  --acsp-teal: #6dc1d4;
+  --acsp-teal-soft: #a7dde9;
+  --acsp-green: #8fc54a;
+  --acsp-green-soft: #b8dc7f;
+  --acsp-bg: #f4f8fb;
+  --acsp-surface: #ffffff;
+  --acsp-border: #e3ecf2;
+  --acsp-text: #14233a;
+  --acsp-text-soft: #5b6b80;
+
+  --background: var(--acsp-bg);
+  --foreground: var(--acsp-text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-acsp-navy: var(--acsp-navy);
+  --color-acsp-navy-soft: var(--acsp-navy-soft);
+  --color-acsp-teal: var(--acsp-teal);
+  --color-acsp-teal-soft: var(--acsp-teal-soft);
+  --color-acsp-green: var(--acsp-green);
+  --color-acsp-green-soft: var(--acsp-green-soft);
+  --color-acsp-surface: var(--acsp-surface);
+  --color-acsp-border: var(--acsp-border);
+  --color-acsp-text: var(--acsp-text);
+  --color-acsp-text-soft: var(--acsp-text-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(
+      ellipse at top right,
+      rgba(143, 197, 74, 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at bottom left,
+      rgba(109, 193, 212, 0.18),
+      transparent 50%
+    ),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+}
+
+/* Markdown content inside assistant bubbles */
+.md-content {
+  color: var(--acsp-text);
+  line-height: 1.55;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.md-content p {
+  margin: 0;
+}
+
+.md-content > * + * {
+  margin-top: 0.6rem;
+}
+
+.md-content strong {
+  color: var(--acsp-navy);
+  font-weight: 600;
+}
+
+.md-content a {
+  color: var(--acsp-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--acsp-teal);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  word-break: break-word;
+}
+
+.md-content a:hover {
+  color: var(--acsp-teal);
+}
+
+.md-content ul,
+.md-content ol {
+  padding-left: 1.25rem;
+}
+
+.md-content ul {
+  list-style: disc;
+}
+
+.md-content ol {
+  list-style: decimal;
+}
+
+.md-content li + li {
+  margin-top: 0.25rem;
+}
+
+.md-content code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  background: rgba(109, 193, 212, 0.15);
+  color: var(--acsp-navy);
+  padding: 0.1em 0.35em;
+  border-radius: 0.35rem;
+  font-size: 0.85em;
+}
+
+.md-content pre {
+  background: var(--acsp-navy);
+  color: #f4f8fb;
+  padding: 0.9rem 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+}
+
+.md-content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.md-content blockquote {
+  border-left: 3px solid var(--acsp-teal);
+  padding-left: 0.75rem;
+  color: var(--acsp-text-soft);
+  font-style: italic;
+}
+
+.md-content h1,
+.md-content h2,
+.md-content h3 {
+  color: var(--acsp-navy);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.md-content h1 {
+  font-size: 1.35rem;
+  margin-top: 0.75rem;
+}
+.md-content h2 {
+  font-size: 1.2rem;
+  margin-top: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--acsp-teal-soft);
+}
+.md-content h3 {
+  font-size: 1.05rem;
+  margin-top: 0.5rem;
+}
+
+.md-content > h1:first-child,
+.md-content > h2:first-child,
+.md-content > h3:first-child {
+  margin-top: 0;
+}
+
+.md-content hr {
+  border: 0;
+  border-top: 1px solid var(--acsp-border);
+}
+
+.md-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.md-content th,
+.md-content td {
+  border: 1px solid var(--acsp-border);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.md-content th {
+  background: rgba(109, 193, 212, 0.12);
+  color: var(--acsp-navy);
+}
+
+/* Typing dots */
+@keyframes acsp-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.acsp-dot {
+  animation: acsp-dot 1.2s infinite;
+}
+
+.acsp-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.acsp-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Subtle bubble entry */
+@keyframes acsp-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.acsp-bubble-in {
+  animation: acsp-bubble-in 0.25s ease-out both;
+}
+
+/* Scrollbar */
+.acsp-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.acsp-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.acsp-scroll::-webkit-scrollbar-thumb {
+  background: rgba(109, 193, 212, 0.35);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.acsp-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 58, 95, 0.45);
+  background-clip: padding-box;
 }
