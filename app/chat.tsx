@@ -25,11 +25,6 @@ type Message = {
 
 const SUGGESTIONS = [
   {
-    label: "Former mes managers",
-    prompt:
-      "Je veux former mes managers à mieux communiquer avec leurs équipes.",
-  },
-  {
     label: "Lutter contre l'épuisement",
     prompt:
       "Mes salariés sont épuisés, quelles formations bien-être proposez-vous ?",
