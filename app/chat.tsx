@@ -233,8 +233,8 @@ export default function Chat() {
           </button>
         </form>
         <p className="mx-auto max-w-3xl px-4 pb-3 text-center text-[11px] text-acsp-text-soft sm:px-6">
-          Julie est un assistant virtuel — pour un devis ou un conseil
-          personnalisé, contactez ACSP au 07 66 12 15 71.
+          Julie est un assistant virtuel. Pour un devis ou un conseil
+          personnalisé, notre équipe peut vous rappeler au 07 66 12 15 71.
         </p>
       </div>
     </div>
@@ -253,12 +253,12 @@ function WelcomeState({ onPick }: { onPick: (prompt: string) => void }) {
       </div>
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold tracking-tight text-acsp-navy sm:text-3xl">
-          Bonjour, je suis Julie 👋
+          Bonjour, je suis Julie
         </h2>
         <p className="mx-auto max-w-xl text-[0.95rem] leading-6 text-acsp-text-soft">
-          Conseillère virtuelle d'ACSP Formations. Dites-moi ce que vous
-          cherchez à apprendre, pour vous ou votre équipe, et je vous
-          orienterai vers les formations adaptées.
+          Conseillère virtuelle d'ACSP Formations. Est-ce qu'il y a une
+          formation qui vous intéresse ? Sinon, dites-moi ce que vous
+          aimeriez améliorer, je vous oriente.
         </p>
       </div>
       <div className="grid w-full max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2">
