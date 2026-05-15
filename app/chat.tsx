@@ -25,18 +25,34 @@ type Message = {
 
 const SUGGESTIONS = [
   {
-    label: "Lutter contre l'épuisement",
+    label: "Leadership & Management",
     prompt:
-      "Mes salariés sont épuisés, quelles formations bien-être proposez-vous ?",
+      "Quelles formations proposez-vous en Leadership & Management ?",
   },
   {
-    label: "Formation CATIA V5",
+    label: "Communication & Relations humaines",
     prompt:
-      "Je cherche une formation CATIA V5 pour mes dessinateurs, niveau débutant.",
+      "Quelles formations proposez-vous en Communication & Relations humaines ?",
   },
   {
-    label: "Financement OPCO",
-    prompt: "Comment financer une formation avec mon OPCO ?",
+    label: "Santé & Performances humaines",
+    prompt:
+      "Quelles formations proposez-vous en Santé & Performances humaines ?",
+  },
+  {
+    label: "QVCT & Prévention",
+    prompt:
+      "Quelles formations proposez-vous en QVCT & Prévention ?",
+  },
+  {
+    label: "Stratégie & Transformation",
+    prompt:
+      "Quelles formations proposez-vous en Stratégie & Transformation ?",
+  },
+  {
+    label: "Compétences métiers & techniques",
+    prompt:
+      "Quelles formations proposez-vous en Compétences métiers & techniques ?",
   },
 ];
 
