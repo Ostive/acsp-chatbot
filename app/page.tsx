@@ -1,16 +1,23 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import Chat from "./chat";
 
 export default function Home() {
+  const [chatKey, setChatKey] = useState(0);
+
+  const resetChat = () => setChatKey((k) => k + 1);
+
   return (
     <div className="flex h-dvh flex-1 flex-col overflow-hidden">
       <header className="sticky top-0 z-10 border-b border-acsp-border bg-white/85 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <a
-            href="https://www.acsp-formations.fr/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3"
+          <button
+            type="button"
+            onClick={resetChat}
+            className="flex items-center gap-3 rounded-lg p-1 -m-1 transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-acsp-teal"
+            aria-label="Revenir à l'accueil"
           >
             <Image
               src="/ACSP-Formations-Occitanie.webp"
@@ -21,7 +28,7 @@ export default function Home() {
               style={{ height: "auto" }}
               className="h-12 w-auto"
             />
-            <span className="hidden flex-col leading-tight sm:flex">
+            <span className="hidden flex-col leading-tight text-left sm:flex">
               <span className="text-sm font-semibold text-acsp-navy">
                 ACSP Formations
               </span>
@@ -29,7 +36,7 @@ export default function Home() {
                 Occitanie · Labastide-Saint-Pierre
               </span>
             </span>
-          </a>
+          </button>
 
           <div className="flex items-center gap-3">
             <span className="hidden items-center gap-2 rounded-full border border-acsp-border bg-white px-3 py-1.5 text-xs font-medium text-acsp-text-soft sm:inline-flex">
@@ -52,7 +59,7 @@ export default function Home() {
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col">
-        <Chat />
+        <Chat key={chatKey} />
       </main>
     </div>
   );

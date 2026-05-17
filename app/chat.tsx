@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -56,8 +57,50 @@ const SUGGESTIONS = [
   },
 ];
 
+const TYPEWRITER_PHRASES = [
+  "Quelle formation vous intéresse aujourd'hui ?",
+  "Dites-moi ce que vous aimeriez améliorer.",
+  "Parlons de vos objectifs professionnels.",
+  "Cherchons ensemble la formation idéale.",
+];
+
 function makeId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+function useTypewriter(
+  phrases: string[],
+  typeSpeed = 55,
+  deleteSpeed = 25,
+  pauseAfter = 1800,
+) {
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = phrases[index];
+    if (!deleting && text === current) {
+      const t = setTimeout(() => setDeleting(true), pauseAfter);
+      return () => clearTimeout(t);
+    }
+    if (deleting && text === "") {
+      setDeleting(false);
+      setIndex((i) => (i + 1) % phrases.length);
+      return;
+    }
+    const t = setTimeout(
+      () => {
+        setText((prev) =>
+          deleting ? prev.slice(0, -1) : current.slice(0, prev.length + 1),
+        );
+      },
+      deleting ? deleteSpeed : typeSpeed,
+    );
+    return () => clearTimeout(t);
+  }, [text, deleting, index, phrases, typeSpeed, deleteSpeed, pauseAfter]);
+
+  return text;
 }
 
 export default function Chat() {
@@ -68,6 +111,7 @@ export default function Chat() {
   const sessionIdRef = useRef<string>("");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const heroTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (!sessionIdRef.current) {
@@ -83,12 +127,13 @@ export default function Chat() {
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, isSending]);
 
-  // Auto-resize textarea
+  // Auto-resize textareas
   useEffect(() => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    ta.style.height = "auto";
-    ta.style.height = Math.min(ta.scrollHeight, 180) + "px";
+    for (const ta of [textareaRef.current, heroTextareaRef.current]) {
+      if (!ta) continue;
+      ta.style.height = "auto";
+      ta.style.height = Math.min(ta.scrollHeight, 180) + "px";
+    }
   }, [input]);
 
   const sendMessage = useCallback(
@@ -176,6 +221,82 @@ export default function Chat() {
     [],
   );
 
+  if (isEmpty) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-8 px-4 py-10 sm:px-6">
+          <WelcomeHero />
+
+          <form
+            onSubmit={onSubmit}
+            className="acsp-fade-up w-full"
+            style={{ animationDelay: "180ms" }}
+          >
+            <div className="flex items-end gap-2">
+              <div className="flex-1 rounded-2xl border border-acsp-border bg-white shadow-md transition-all focus-within:border-acsp-teal focus-within:shadow-lg focus-within:ring-2 focus-within:ring-acsp-teal/30">
+                <textarea
+                  ref={heroTextareaRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={onKeyDown}
+                  rows={1}
+                  placeholder="Écrivez votre question à Julie…"
+                  className="block w-full resize-none bg-transparent px-5 py-4 text-[0.95rem] leading-6 text-acsp-text placeholder:text-acsp-text-soft/70 focus:outline-none"
+                  disabled={isSending}
+                  autoFocus
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isSending || !input.trim()}
+                className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-acsp-navy text-white shadow-md transition-all hover:bg-acsp-navy-soft hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Envoyer"
+              >
+                <SendIcon />
+              </button>
+            </div>
+          </form>
+
+          <div
+            className="acsp-fade-up w-full"
+            style={{ animationDelay: "320ms" }}
+          >
+            <p className="mb-3 text-center text-xs font-medium uppercase tracking-wider text-acsp-text-soft/80">
+              Suggestions
+            </p>
+            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {SUGGESTIONS.map((s, i) => (
+                <button
+                  key={s.label}
+                  type="button"
+                  onClick={() => void sendMessage(s.prompt)}
+                  className="acsp-fade-up group flex items-center justify-between gap-3 rounded-xl border border-acsp-border bg-white/80 px-4 py-3 text-left text-sm font-medium text-acsp-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-acsp-teal hover:shadow-md"
+                  style={{ animationDelay: `${380 + i * 60}ms` }}
+                >
+                  <span>{s.label}</span>
+                  <span className="text-acsp-teal transition-transform group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {error ? (
+            <div className="w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          ) : null}
+
+          <p className="text-center text-[11px] text-acsp-text-soft">
+            Julie est un assistant virtuel. Pour un devis ou un conseil
+            personnalisé, notre équipe peut vous rappeler au 07 66 12 15 71.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div
@@ -183,18 +304,14 @@ export default function Chat() {
         className="acsp-scroll min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-6 sm:px-6"
       >
         <div className="mx-auto flex max-w-3xl flex-col gap-5">
-          {isEmpty ? (
-            <WelcomeState onPick={(p) => void sendMessage(p)} />
-          ) : (
-            messages.map((m) => (
-              <MessageBubble
-                key={m.id}
-                role={m.role}
-                content={m.content}
-                markdownComponents={markdownComponents}
-              />
-            ))
-          )}
+          {messages.map((m) => (
+            <MessageBubble
+              key={m.id}
+              role={m.role}
+              content={m.content}
+              markdownComponents={markdownComponents}
+            />
+          ))}
 
           {isSending ? <TypingBubble /> : null}
 
@@ -241,41 +358,43 @@ export default function Chat() {
   );
 }
 
-function WelcomeState({ onPick }: { onPick: (prompt: string) => void }) {
+function WelcomeHero() {
+  const typed = useTypewriter(TYPEWRITER_PHRASES);
+
   return (
-    <div className="acsp-bubble-in flex flex-col items-center gap-6 py-8 text-center">
-      <div className="relative flex h-20 w-20 items-center justify-center">
-        <span className="absolute inset-0 rounded-full bg-acsp-teal/25 blur-xl" />
-        <span className="absolute inset-2 rounded-full bg-gradient-to-br from-acsp-teal to-acsp-green opacity-80" />
-        <span className="relative grid h-14 w-14 place-items-center rounded-full bg-white text-2xl font-semibold text-acsp-navy shadow-md">
-          J
+    <div className="flex flex-col items-center gap-5 text-center">
+      <div
+        className="acsp-fade-up relative flex h-20 w-20 items-center justify-center"
+        style={{ animationDelay: "0ms" }}
+      >
+        <span className="absolute inset-0 animate-pulse rounded-full bg-acsp-teal/25 blur-xl" />
+        <span className="absolute inset-2 rounded-full bg-linear-to-br from-acsp-teal to-acsp-green opacity-80" />
+        <span className="relative grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-white shadow-md ring-2 ring-white">
+          <Image
+            src="/acsp_julie.png"
+            alt="Julie"
+            width={56}
+            height={56}
+            priority
+            className="h-full w-full object-cover"
+          />
         </span>
       </div>
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight text-acsp-navy sm:text-3xl">
-          Bonjour, je suis Julie
-        </h2>
-        <p className="mx-auto max-w-xl text-[0.95rem] leading-6 text-acsp-text-soft">
-          Conseillère virtuelle d'ACSP Formations. Est-ce qu'il y a une
-          formation qui vous intéresse ? Sinon, dites-moi ce que vous
-          aimeriez améliorer, je vous oriente.
-        </p>
-      </div>
-      <div className="grid w-full max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s.label}
-            type="button"
-            onClick={() => onPick(s.prompt)}
-            className="group flex items-center justify-between gap-3 rounded-xl border border-acsp-border bg-white/80 px-4 py-3 text-left text-sm font-medium text-acsp-navy shadow-sm transition-all hover:-translate-y-0.5 hover:border-acsp-teal hover:shadow-md"
-          >
-            <span>{s.label}</span>
-            <span className="text-acsp-teal transition-transform group-hover:translate-x-0.5">
-              →
-            </span>
-          </button>
-        ))}
-      </div>
+
+      <h1
+        className="acsp-fade-up acsp-shimmer text-3xl font-semibold tracking-tight sm:text-4xl"
+        style={{ animationDelay: "80ms" }}
+      >
+        Bonjour, je suis Julie
+      </h1>
+
+      <p
+        className="acsp-fade-up min-h-7 max-w-xl text-base leading-7 text-acsp-text-soft sm:text-lg"
+        style={{ animationDelay: "140ms" }}
+      >
+        {typed}
+        <span className="acsp-caret ml-0.5 inline-block h-5 w-0.5 translate-y-0.75 bg-acsp-teal" />
+      </p>
     </div>
   );
 }
@@ -348,8 +467,14 @@ function TypingBubble() {
 
 function Avatar() {
   return (
-    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-acsp-teal to-acsp-green text-sm font-semibold text-white shadow-sm">
-      J
+    <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-white shadow-sm ring-1 ring-acsp-border">
+      <Image
+        src="/acsp_julie.png"
+        alt="Julie"
+        width={36}
+        height={36}
+        className="h-full w-full object-cover"
+      />
     </span>
   );
 }
